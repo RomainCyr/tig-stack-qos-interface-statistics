@@ -1,0 +1,613 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 73,
+      "panels": [],
+      "title": "Counters",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "P951FEA4DE68E13C5"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "string"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/Bytes/"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "decbytes"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 77,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": [],
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "Interface"
+          }
+        ]
+      },
+      "pluginVersion": "10.0.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "hide": false,
+          "query": "import \"regexp\"\nfrom(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> drop(columns: [\"host\"])\n  |> filter(fn: (r) => if \"${direction}\" == \"In\" then r[\"_measurement\"] == \"StatsQosIn\" \n                       else if \"${direction}\" == \"Out\" then r[\"_measurement\"] == \"StatsQosOut\" \n                       else r[\"_measurement\"] == \"StatsQosIn\" or r[\"_measurement\"] == \"StatsQosOut\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_drop_bytes\" or r[\"_field\"] == \"total_drop_packets\" \n                      or r[\"_field\"] == \"transmit_packets\" or r[\"_field\"] == \"transmit_bytes\"\n                      or r[\"_field\"] == \"pre_policy_matched_packets\" or r[\"_field\"] == \"pre_policy_matched_bytes\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> filter(fn: (r) => if \"${interface}\" == \"all\" then true else r[\"interface_name\"] =~ /${interface:regex}/)\n  |> last()\n  |> pivot(rowKey: [\"interface_name\",\"class_name\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group()\n  |> map(fn: (r) => ({r with direction: if r._measurement==\"StatsQosIn\" then \"In\" else \"Out\"}))\n  |> drop(columns: [\"host\",\"subscription\",\"service_policy_name\",\"_start\",\"_stop\",\"path\",\"source\",\"_measurement\"])\n  ",
+          "refId": "B"
+        }
+      ],
+      "title": "${interface}",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "class_name": 2,
+              "direction": 1,
+              "interface_name": 0,
+              "pre_policy_matched_bytes": 3,
+              "pre_policy_matched_packets": 4,
+              "total_drop_bytes": 7,
+              "total_drop_packets": 8,
+              "transmit_bytes": 5,
+              "transmit_packets": 6
+            },
+            "renameByName": {
+              "Direction": "Direction",
+              "_measurement": "",
+              "class_name": "Class",
+              "direction": "Direction",
+              "interface_name": "Interface",
+              "pre_policy_matched_bytes": "Matched (Bytes)",
+              "pre_policy_matched_packets": "Matched (Packets)",
+              "total_drop_bytes": "Drop (Bytes)",
+              "total_drop_packets": "Drop (Packets)",
+              "transmit_bytes": "Transmit (Bytes)",
+              "transmit_packets": "Transmit (Packets)"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 25,
+      "panels": [],
+      "title": "Transmitted Rate",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "P951FEA4DE68E13C5"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "displayName": "${__series.name} ${__field.labels.class_name}",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Kbits"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 45,
+      "maxPerRow": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "repeat": "interface",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "hide": false,
+          "query": "from(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> drop (columns: [\"host\"])\n  |> filter(fn: (r) => if \"${direction}\" == \"In\" then r[\"_measurement\"] == \"StatsQosIn\" \n                       else if \"${direction}\" == \"Out\" then r[\"_measurement\"] == \"StatsQosOut\" \n                       else r[\"_measurement\"] == \"StatsQosIn\" or r[\"_measurement\"] == \"StatsQosOut\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_transmit_rate\")\n  |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> map(fn: (r) => ({r with _measurement: if r._measurement==\"StatsQosIn\" then \"In\" else \"Out\"}))\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "B"
+        }
+      ],
+      "title": "${interface}",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 291
+      },
+      "id": 15,
+      "panels": [],
+      "title": "Drop Rate",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "P951FEA4DE68E13C5"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "displayName": "${__series.name} ${__field.labels.class_name}",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Kbits"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 24,
+        "x": 0,
+        "y": 292
+      },
+      "id": 14,
+      "maxPerRow": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "repeat": "interface",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "hide": false,
+          "query": "from(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> drop (columns: [\"host\"])\n  |> filter(fn: (r) => if \"${direction}\" == \"In\" then r[\"_measurement\"] == \"StatsQosIn\" \n                       else if \"${direction}\" == \"Out\" then r[\"_measurement\"] == \"StatsQosOut\" \n                       else r[\"_measurement\"] == \"StatsQosIn\" or r[\"_measurement\"] == \"StatsQosOut\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_drop_rate\")\n  |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> map(fn: (r) => ({r with _measurement: if r._measurement==\"StatsQosIn\" then \"In\" else \"Out\"}))\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "B"
+        }
+      ],
+      "title": "${interface}",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 564
+      },
+      "id": 6,
+      "panels": [],
+      "title": "Match Rate",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "P951FEA4DE68E13C5"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "displayName": "${__series.name} ${__field.labels.class_name}",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Kibits"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 24,
+        "x": 0,
+        "y": 565
+      },
+      "id": 10,
+      "maxPerRow": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "repeat": "interface",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "hide": false,
+          "query": "from(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> drop (columns: [\"host\"])\n  |> filter(fn: (r) => if \"${direction}\" == \"In\" then r[\"_measurement\"] == \"StatsQosIn\" \n                       else if \"${direction}\" == \"Out\" then r[\"_measurement\"] == \"StatsQosOut\" \n                       else r[\"_measurement\"] == \"StatsQosIn\" or r[\"_measurement\"] == \"StatsQosOut\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"match_data_rate\")\n  |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> map(fn: (r) => ({r with _measurement: if r._measurement==\"StatsQosIn\" then \"In\" else \"Out\"}))\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n    ",
+          "refId": "B"
+        }
+      ],
+      "title": "${interface}",
+      "transformations": [],
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": "all",
+        "current": {
+          "selected": true,
+          "text": "R0",
+          "value": "R0"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "InfluxDB"
+        },
+        "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"source\",\n    predicate: (r) => true,\n    start: -1d\n)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Device",
+        "multi": false,
+        "name": "device",
+        "options": [],
+        "query": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"source\",\n    predicate: (r) => true,\n    start: -1d\n)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 5,
+        "type": "query"
+      },
+      {
+        "allValue": "all",
+        "current": {
+          "selected": true,
+          "text": [
+            "Bundle-Ether1"
+          ],
+          "value": [
+            "Bundle-Ether1"
+          ]
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "InfluxDB"
+        },
+        "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"interface_name\",\n    predicate: (r) => (if \"${device}\" == \"all\" then true else r.source == \"${device}\"),\n    start: v.timeRangeStart\n)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Interface",
+        "multi": true,
+        "name": "interface",
+        "options": [],
+        "query": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"interface_name\",\n    predicate: (r) => (if \"${device}\" == \"all\" then true else r.source == \"${device}\"),\n    start: v.timeRangeStart\n)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": "Both",
+        "current": {
+          "selected": true,
+          "text": "Out",
+          "value": "Out"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Direction",
+        "multi": false,
+        "name": "direction",
+        "options": [
+          {
+            "selected": false,
+            "text": "In",
+            "value": "In"
+          },
+          {
+            "selected": true,
+            "text": "Out",
+            "value": "Out"
+          },
+          {
+            "selected": false,
+            "text": "Both",
+            "value": "Both"
+          }
+        ],
+        "query": "In,Out,Both\n",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {},
+        "definition": "",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "query0",
+        "options": [],
+        "query": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "2023-07-20T16:50:49.000Z",
+    "to": "now+1h"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "QOS Interface Stats",
+  "uid": "cc50666e-cf3b-4c84-87ca-9a3ab0fce24bb",
+  "version": 1,
+  "weekStart": ""
+}

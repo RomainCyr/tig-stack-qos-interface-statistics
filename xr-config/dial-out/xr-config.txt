@@ -1,0 +1,15 @@
+telemetry model-driven
+ destination-group TIG
+  vrf MGMT
+  address-family ipv4 10.48.82.175 port 57500
+   encoding self-describing-gpb
+   protocol grpc no-tls
+  !
+ !
+ sensor-group QOS
+  sensor-path Cisco-IOS-XR-qos-ma-oper:qos/interface-table/interface/output
+  sensor-path Cisco-IOS-XR-qos-ma-oper:qos/interface-table/interface/input
+ !
+ subscription TIG
+  sensor-group-id QOS sample-interval 10000
+  destination-id TIG
