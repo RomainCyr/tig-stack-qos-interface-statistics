@@ -1,0 +1,15 @@
+telemetry model-driven
+ destination-group TIG
+  vrf MGMT
+  address-family ipv4 192.168.122.1 port 57500
+   encoding self-describing-gpb
+   protocol grpc tls-hostname telegraf.lab
+  !
+ !
+ sensor-group QOS
+  sensor-path Cisco-IOS-XR-qos-ma-oper:qos/interface-table/interface/input
+  sensor-path Cisco-IOS-XR-qos-ma-oper:qos/interface-table/interface/output
+ !
+ subscription TIG
+  sensor-group-id QOS sample-interval 10000
+  destination-id TIG
