@@ -75,7 +75,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "uid": "InfluxDB"
       },
       "fieldConfig": {
         "defaults": {
@@ -165,7 +165,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "InfluxDB"
           },
           "hide": false,
           "query": "import \"regexp\"\nif \"${direction}\" != \"Out\" then\nfrom(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"StatsQosIn\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_drop_bytes\" or r[\"_field\"] == \"total_drop_packets\" \n                      or r[\"_field\"] == \"transmit_packets\" or r[\"_field\"] == \"transmit_bytes\"\n                      or r[\"_field\"] == \"pre_policy_matched_packets\" or r[\"_field\"] == \"pre_policy_matched_bytes\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> filter(fn: (r) => if \"${interface}\" == \"all\" then true else r[\"interface_name\"] =~ /${interface:regex}/)\n  |> drop (columns: [\"host\",\"subscription\",\"service_policy_name\",\"_start\",\"_stop\",\"path\",\"source\",\"_measurement\"])\n  |> last()\n  |> pivot(rowKey: [\"interface_name\",\"class_name\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group()\nelse\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => false)",
@@ -174,7 +174,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "InfluxDB"
           },
           "hide": false,
           "query": "import \"regexp\"\nif \"${direction}\" != \"In\" then\nfrom(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"StatsQosOut\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_drop_bytes\" or r[\"_field\"] == \"total_drop_packets\" \n                      or r[\"_field\"] == \"transmit_packets\" or r[\"_field\"] == \"transmit_bytes\"\n                      or r[\"_field\"] == \"pre_policy_matched_packets\" or r[\"_field\"] == \"pre_policy_matched_bytes\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> filter(fn: (r) => if \"${interface}\" == \"all\" then true else r[\"interface_name\"] =~ /${interface:regex}/)\n  |> drop (columns: [\"host\",\"subscription\",\"service_policy_name\",\"_start\",\"_stop\",\"path\",\"source\",\"_measurement\"])\n  |> last()\n  |> pivot(rowKey: [\"interface_name\",\"class_name\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group()\nelse\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => false)",
@@ -236,7 +236,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "uid": "InfluxDB"
       },
       "fieldConfig": {
         "defaults": {
@@ -345,7 +345,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "InfluxDB"
           },
           "hide": false,
           "query": "if \"${direction}\" != \"Out\" then\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => r[\"_measurement\"] == \"StatsQosIn\" )\n    |> filter(fn: (r) => r[\"_field\"] == \"match_data_rate\")\n    |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n    |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n    |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n    |> drop(columns: [\"host\",\"subscription\",\"path\"])\nelse\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => false)\n\n",
@@ -354,7 +354,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "InfluxDB"
           },
           "hide": false,
           "query": "if \"${direction}\" != \"In\" then\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => r[\"_measurement\"] == \"StatsQosOut\" )\n    |> filter(fn: (r) => r[\"_field\"] == \"match_data_rate\")\n    |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n    |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n    |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n    |> drop(columns: [\"host\",\"subscription\",\"path\"])\nelse\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => false)\n\n",
@@ -377,7 +377,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "InfluxDB"
           },
           "fieldConfig": {
             "defaults": {
@@ -486,7 +486,7 @@
             {
               "datasource": {
                 "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "uid": "InfluxDB"
               },
               "hide": false,
               "query": "if \"${direction}\" != \"Out\" then\n from(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"StatsQosIn\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_transmit_rate\")\n  |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"host\",\"subscription\",\"path\"])\nelse\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => false)",
@@ -495,7 +495,7 @@
             {
               "datasource": {
                 "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "uid": "InfluxDB"
               },
               "hide": false,
               "query": "if \"${direction}\" != \"In\" then\n from(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"StatsQosOut\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_transmit_rate\")\n  |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"host\",\"subscription\",\"path\"])\nelse\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => false)",
@@ -525,7 +525,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "uid": "InfluxDB"
       },
       "fieldConfig": {
         "defaults": {
@@ -634,7 +634,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "InfluxDB"
           },
           "hide": false,
           "query": "if \"${direction}\" != \"Out\" then\nfrom(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"StatsQosIn\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_drop_rate\")\n  |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"host\",\"subscription\",\"path\"])\nelse\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => false)",
@@ -643,7 +643,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "InfluxDB"
           },
           "hide": false,
           "query": "if \"${direction}\" != \"In\" then\nfrom(bucket: \"telemetry\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"StatsQosOut\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"total_drop_rate\")\n  |> filter(fn: (r) => r[\"interface_name\"] == \"${interface}\")\n  |> filter(fn: (r) => r[\"source\"] == \"${device}\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"host\",\"subscription\",\"path\"])\nelse\n  from(bucket: \"telemetry\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => false)",
@@ -664,7 +664,7 @@
         "current": {},
         "datasource": {
           "type": "influxdb",
-          "uid": "P951FEA4DE68E13C5"
+          "uid": "InfluxDB"
         },
         "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"source\",\n    predicate: (r) => r._measurement == \"StatsQosIn\" or r._measurement == \"StatsQosOut\",\n    start: v.timeRangeStart\n)",
         "hide": 0,
@@ -685,7 +685,7 @@
         "current": {},
         "datasource": {
           "type": "influxdb",
-          "uid": "P951FEA4DE68E13C5"
+          "uid": "InfluxDB"
         },
         "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"interface_name\",\n    predicate: (r) => (r._measurement == \"StatsQosIn\" or r._measurement == \"StatsQosOut\") and r.source == \"${device}\",\n    start: v.timeRangeStart\n)",
         "hide": 0,
